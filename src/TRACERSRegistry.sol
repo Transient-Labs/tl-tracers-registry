@@ -1,27 +1,14 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity 0.8.22;
 
 import {OwnableAccessControl} from "tl-sol-tools/access/OwnableAccessControl.sol";
+import {ITRACERSRegistry} from "src/ITRACERSRegistry.sol";
 
 /// @title TRACERSRegistry
 /// @notice Registry for TRACE Registered agents
 /// @author transientlabs.xyz
-/// @custom:version 2.7.0
-contract TRACERSRegistry is OwnableAccessControl {
-    /*//////////////////////////////////////////////////////////////////////////
-                                    Custom Types
-    //////////////////////////////////////////////////////////////////////////*/
-
-    /// @dev Struct defining a registered agent
-    /// @param isPermanent A bool defining if the agent is a permanent agent (if true, ignore `numberOfStories`)
-    /// @param numberOfStories The number of stories allowed for this agent (N/A if `isPermanent` is true)
-    /// @param name The name of the registered agent
-    struct RegisteredAgent {
-        bool isPermanent;
-        uint128 numberOfStories;
-        string name;
-    }
-
+/// @custom:version 3.0.0
+contract TRACERSRegistry is OwnableAccessControl, ITRACERSRegistry {
     /*//////////////////////////////////////////////////////////////////////////
                                 State Variables
     //////////////////////////////////////////////////////////////////////////*/
@@ -29,23 +16,6 @@ contract TRACERSRegistry is OwnableAccessControl {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     mapping(address => RegisteredAgent) private _registeredAgents; // registered agent address -> registered agent (global so should not use `numberOfStories`)
     mapping(address => mapping(address => RegisteredAgent)) private _registeredAgentOverrides; // nft contract -> registered agent address -> registered agent (not global so can use `numberOfStories` or `isPermanent`)
-
-    /*//////////////////////////////////////////////////////////////////////////
-                                    Events
-    //////////////////////////////////////////////////////////////////////////*/
-
-    /// @dev event whenever a registered agent is added, removed, or updated
-    event RegisteredAgentUpdate(
-        address indexed sender, address indexed registeredAgentAddress, RegisteredAgent registeredAgent
-    );
-
-    /// @dev event whenever a registered agent override is added, removed, or updated
-    event RegisteredAgentOverrideUpdate(
-        address indexed sender,
-        address indexed nftContract,
-        address indexed indexedregisteredAgentAddress,
-        RegisteredAgent registeredAgent
-    );
 
     /*//////////////////////////////////////////////////////////////////////////
                                 Custom Errors
@@ -64,10 +34,7 @@ contract TRACERSRegistry is OwnableAccessControl {
                                 Registered Agent Functions
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Function to add a global registered agent by the contract owner
-    /// @dev This is a for a global registered agent so `registeredAgent.numberOfStories` is ignored
-    /// @param registeredAgentAddress The registered agent address
-    /// @param registeredAgent The registered agent
+    /// @inheritdoc ITRACERSRegistry
     function setRegisteredAgent(address registeredAgentAddress, RegisteredAgent memory registeredAgent)
         external
         onlyOwner
@@ -79,10 +46,7 @@ contract TRACERSRegistry is OwnableAccessControl {
         emit RegisteredAgentUpdate(msg.sender, registeredAgentAddress, registeredAgent);
     }
 
-    /// @notice Function to add a registered agent override by an nft contract owner or admin
-    /// @param nftContract The nft contract
-    /// @param registeredAgentAddress The registered agent address
-    /// @param registeredAgent The registered agent
+    /// @inheritdoc ITRACERSRegistry
     function setRegisteredAgentOverride(
         address nftContract,
         address registeredAgentAddress,
@@ -101,12 +65,7 @@ contract TRACERSRegistry is OwnableAccessControl {
                                 External Functions
     //////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Function callable by an nft contract to check the registered agent
-    /// @dev This MUST be called by the nft contract in order to check overrides properly
-    /// @dev Adjusts overrides that are limited in the number of stories allowed, hence no view modifier
-    /// @param registeredAgentAddress The registered agent address
-    /// @return bool Boolean indicating if the address is question is a registered agent or not
-    /// @return string The name of the registered agent
+    /// @inheritdoc ITRACERSRegistry
     function isRegisteredAgent(address registeredAgentAddress) external returns (bool, string memory) {
         RegisteredAgent storage registeredAgent = _registeredAgents[registeredAgentAddress];
         RegisteredAgent storage registeredAgentOverride = _registeredAgentOverrides[msg.sender][registeredAgentAddress];
@@ -123,10 +82,7 @@ contract TRACERSRegistry is OwnableAccessControl {
         }
     }
 
-    /// @notice External view function to get a registered agent, returning an overrided agent for a contract if it exists
-    /// @param nftContract The nft contract (set to the zero address if not looking for an override)
-    /// @param registeredAgentAddress The registered agent address
-    /// @return registeredAgent The registered agent struct
+    /// @inheritdoc ITRACERSRegistry
     function getRegisteredAgent(address nftContract, address registeredAgentAddress)
         external
         view
