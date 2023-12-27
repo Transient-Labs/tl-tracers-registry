@@ -1,66 +1,10 @@
-## Foundry
+# Transient Labs T.R.A.C.E. Registered Agents Registry
+Registered agents are a way for to ensure that proper data is inscribed on-chain for T.R.A.C.E. This registry allows for global registered agents to be created or removed as needed. It also allows creators to add their own registered agents per contract.
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+## Disclaimer
+This codebase is provided on an "as is" and "as available" basis.
 
-Foundry consists of:
+We do not give any warranties and will not be liable for any loss incurred through any use of this codebase.
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
-
-## Documentation
-
-https://book.getfoundry.sh/
-
-## Usage
-
-### Build
-
-```shell
-$ forge build
-```
-
-### Test
-
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+## License
+This code is copyright Transient Labs, Inc 2023 and is licensed under the MIT license.

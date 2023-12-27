@@ -4,7 +4,7 @@ pragma solidity 0.8.22;
 import "forge-std/Test.sol";
 import {Ownable} from "openzeppelin/access/Ownable.sol";
 import {Mock721OwnableAccessControl} from "test/mock/Mock721OwnableAccessControl.sol";
-import {TRACERSRegistry} from "src/TRACERSRegistry.sol";
+import {ITRACERSRegistry, TRACERSRegistry} from "src/TRACERSRegistry.sol";
 
 contract TRACERSRegistryTest is Test, TRACERSRegistry {
     Mock721OwnableAccessControl public nft;
@@ -146,5 +146,11 @@ contract TRACERSRegistryTest is Test, TRACERSRegistry {
         if (numberOfStories > 0 && !!isPermanent) {
             assert(returnedRegisteredAgent.numberOfStories == numberOfStories - 1);
         }
+    }
+
+    /// @dev test ERC165 support
+    function test_supportsInterface() public {
+        assertTrue(registry.supportsInterface(0x01ffc9a7));
+        assertTrue(registry.supportsInterface(type(ITRACERSRegistry).interfaceId));
     }
 }

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.22;
 
+import {ERC165} from "openzeppelin/utils/introspection/ERC165.sol";
 import {OwnableAccessControl} from "tl-sol-tools/access/OwnableAccessControl.sol";
 import {ITRACERSRegistry} from "src/ITRACERSRegistry.sol";
 
@@ -8,7 +9,7 @@ import {ITRACERSRegistry} from "src/ITRACERSRegistry.sol";
 /// @notice Registry for TRACE Registered agents
 /// @author transientlabs.xyz
 /// @custom:version 3.0.0
-contract TRACERSRegistry is OwnableAccessControl, ITRACERSRegistry {
+contract TRACERSRegistry is OwnableAccessControl, ERC165, ITRACERSRegistry {
     /*//////////////////////////////////////////////////////////////////////////
                                 State Variables
     //////////////////////////////////////////////////////////////////////////*/
@@ -97,5 +98,14 @@ contract TRACERSRegistry is OwnableAccessControl, ITRACERSRegistry {
             registeredAgent = registeredAgentGlobal;
         }
         return registeredAgent;
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
+                                    ERC165
+    //////////////////////////////////////////////////////////////////////////*/
+
+    /// @inheritdoc ERC165
+    function supportsInterface(bytes4 interfaceId) public view override returns (bool) {
+        return ERC165.supportsInterface(interfaceId) || interfaceId == type(ITRACERSRegistry).interfaceId;
     }
 }
