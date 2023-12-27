@@ -2,6 +2,7 @@
 pragma solidity 0.8.22;
 
 import "forge-std/Test.sol";
+import {Ownable} from "openzeppelin/access/Ownable.sol";
 import {Mock721OwnableAccessControl} from "test/mock/Mock721OwnableAccessControl.sol";
 import {TRACERSRegistry} from "src/TRACERSRegistry.sol";
 
@@ -42,7 +43,7 @@ contract TRACERSRegistryTest is Test, TRACERSRegistry {
         RegisteredAgent memory expectedRegisteredAgent = RegisteredAgent(isPermanent, 0, name);
 
         // revert for hacker
-        vm.expectRevert("Ownable: caller is not the owner");
+        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, hacker));
         vm.prank(hacker);
         registry.setRegisteredAgent(agent, registeredAgent);
 

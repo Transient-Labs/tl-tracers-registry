@@ -34,3 +34,6 @@ gas_test:
 
 fuzz_test:
 	forge test --fuzz-runs 10000
+
+coverage_test:
+	forge coverage
