@@ -6,7 +6,7 @@ import {Ownable} from "openzeppelin/access/Ownable.sol";
 import {Mock721OwnableAccessControl} from "test/mock/Mock721OwnableAccessControl.sol";
 import {ITRACERSRegistry, TRACERSRegistry} from "src/TRACERSRegistry.sol";
 
-contract TRACERSRegistryTest is Test, TRACERSRegistry {
+contract TRACERSRegistryTest is Test {
     Mock721OwnableAccessControl public nft;
     address public nftOwner = address(0x404);
     address public nftAdmin = address(0xC0FFEE);
@@ -14,10 +14,20 @@ contract TRACERSRegistryTest is Test, TRACERSRegistry {
     TRACERSRegistry public registry;
     address public tl = makeAddr("build different.");
 
+    event RegisteredAgentUpdate(
+        address indexed sender, address indexed registeredAgentAddress, ITRACERSRegistry.RegisteredAgent registeredAgent
+    );
+    event RegisteredAgentOverrideUpdate(
+        address indexed sender,
+        address indexed nftContract,
+        address indexed indexedregisteredAgentAddress,
+        ITRACERSRegistry.RegisteredAgent registeredAgent
+    );
+
     function setUp() public {
         // create TRACERSRegistry
         vm.prank(tl);
-        registry = new TRACERSRegistry();
+        registry = new TRACERSRegistry(tl);
 
         // create nft contract
         address[] memory admins = new address[](1);
@@ -38,9 +48,9 @@ contract TRACERSRegistryTest is Test, TRACERSRegistry {
         vm.assume(hacker != tl);
         vm.assume(agent != address(0));
 
-        RegisteredAgent memory registeredAgent = RegisteredAgent(isPermanent, numberOfStories, name);
+        ITRACERSRegistry.RegisteredAgent memory registeredAgent = ITRACERSRegistry.RegisteredAgent(isPermanent, numberOfStories, name);
 
-        RegisteredAgent memory expectedRegisteredAgent = RegisteredAgent(isPermanent, 0, name);
+        ITRACERSRegistry.RegisteredAgent memory expectedRegisteredAgent = ITRACERSRegistry.RegisteredAgent(isPermanent, 0, name);
 
         // revert for hacker
         vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, hacker));
@@ -53,7 +63,7 @@ contract TRACERSRegistryTest is Test, TRACERSRegistry {
         vm.prank(tl);
         registry.setRegisteredAgent(agent, registeredAgent);
 
-        RegisteredAgent memory returnedRegisteredAgent = registry.getRegisteredAgent(address(0), agent);
+        ITRACERSRegistry.RegisteredAgent memory returnedRegisteredAgent = registry.getRegisteredAgent(address(0), agent);
         assert(returnedRegisteredAgent.isPermanent == isPermanent);
         assert(returnedRegisteredAgent.numberOfStories == 0);
         assert(keccak256(bytes(returnedRegisteredAgent.name)) == keccak256(bytes(name)));
@@ -83,10 +93,10 @@ contract TRACERSRegistryTest is Test, TRACERSRegistry {
         vm.assume(hacker != nftOwner && hacker != nftAdmin);
         vm.assume(agent != address(0));
 
-        RegisteredAgent memory registeredAgent = RegisteredAgent(isPermanent, numberOfStories, name);
+        ITRACERSRegistry.RegisteredAgent memory registeredAgent = ITRACERSRegistry.RegisteredAgent(isPermanent, numberOfStories, name);
 
         // revert for hacker
-        vm.expectRevert(NotCreatorOrAdmin.selector);
+        vm.expectRevert(TRACERSRegistry.NotCreatorOrAdmin.selector);
         vm.prank(hacker);
         registry.setRegisteredAgentOverride(address(nft), agent, registeredAgent);
 
@@ -96,7 +106,7 @@ contract TRACERSRegistryTest is Test, TRACERSRegistry {
         vm.prank(nftOwner);
         registry.setRegisteredAgentOverride(address(nft), agent, registeredAgent);
 
-        RegisteredAgent memory returnedRegisteredAgent = registry.getRegisteredAgent(address(nft), agent);
+        ITRACERSRegistry.RegisteredAgent memory returnedRegisteredAgent = registry.getRegisteredAgent(address(nft), agent);
         assert(returnedRegisteredAgent.isPermanent == isPermanent);
         assert(returnedRegisteredAgent.numberOfStories == numberOfStories);
         if (isPermanent || numberOfStories > 0) {

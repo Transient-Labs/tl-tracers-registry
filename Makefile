@@ -2,10 +2,6 @@
 # (-include to ignore error if it does not exist)
 -include .env
 
-# Clean the repo
-clean:
-	forge clean
-
 # Remove modules
 remove:
 	rm -rf .gitmodules && rm -rf .git/modules/* && rm -rf lib && touch .gitmodules && git add . && git commit -m "modules"
@@ -18,9 +14,14 @@ install:
 # Update the modules
 update: remove install
 
-# Builds
+#  Builds
+clean:
+	forge fmt && forge clean
+
 build:
-	forge fmt && forge clean && forge build
+	forge build --evm-version paris
+
+clean_build: clean build
 
 # Tests
 quick_test:
@@ -37,3 +38,14 @@ fuzz_test:
 
 coverage_test:
 	forge coverage
+
+# Deployments
+deploy_arbitrum_sepolia: build
+	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url arbitrum_sepolia --ledger --sender ${SENDER} --broadcast
+	forge verify-contract $$(cat out.txt) src/TRACERSRegistry.sol:TRACERSRegistry --verifier-url https://api-sepolia.arbiscan.io/api --etherscan-api-key ${ARBISCAN_KEY} --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh
+
+deploy_arbitrum_one: build
+	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url arbitrum --ledger --sender ${SENDER} --broadcast
+	forge verify-contract $$(cat out.txt) src/TRACERSRegistry.sol:TRACERSRegistry --chain arbitrum --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh

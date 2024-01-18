@@ -2,14 +2,14 @@
 pragma solidity 0.8.22;
 
 import {ERC165} from "openzeppelin/utils/introspection/ERC165.sol";
-import {OwnableAccessControl} from "tl-sol-tools/access/OwnableAccessControl.sol";
+import {Ownable, OwnableAccessControl} from "tl-sol-tools/access/OwnableAccessControl.sol";
 import {ITRACERSRegistry} from "src/ITRACERSRegistry.sol";
 
 /// @title TRACERSRegistry
 /// @notice Registry for TRACE Registered agents
 /// @author transientlabs.xyz
 /// @custom:version 3.0.0
-contract TRACERSRegistry is OwnableAccessControl, ERC165, ITRACERSRegistry {
+contract TRACERSRegistry is Ownable, ERC165, ITRACERSRegistry {
     /*//////////////////////////////////////////////////////////////////////////
                                 State Variables
     //////////////////////////////////////////////////////////////////////////*/
@@ -29,7 +29,8 @@ contract TRACERSRegistry is OwnableAccessControl, ERC165, ITRACERSRegistry {
                                 Constructor
     //////////////////////////////////////////////////////////////////////////*/
 
-    constructor() OwnableAccessControl() {}
+    /// @param initOwner The initial owner of the contract
+    constructor(address initOwner) Ownable(initOwner) {}
 
     /*//////////////////////////////////////////////////////////////////////////
                                 Registered Agent Functions
