@@ -46,7 +46,7 @@ deploy_arbitrum_sepolia: build
 	@bash print_and_clean.sh
 
 deploy_base_sepolia: build
-	# forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url base_sepolia --ledger --sender ${SENDER} --broadcast
+	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url base_sepolia --ledger --sender ${SENDER} --broadcast
 	forge verify-contract $$(cat out.txt) src/TRACERSRegistry.sol:TRACERSRegistry --chain base-sepolia --watch --constructor-args ${CONSTRUCTOR_ARGS}
 	@bash print_and_clean.sh
 
