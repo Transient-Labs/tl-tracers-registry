@@ -50,6 +50,11 @@ deploy_base_sepolia: build
 	forge verify-contract $$(cat out.txt) src/TRACERSRegistry.sol:TRACERSRegistry --chain base-sepolia --watch --constructor-args ${CONSTRUCTOR_ARGS}
 	@bash print_and_clean.sh
 
+deploy_shape_sepolia: build
+	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url shape_sepolia --ledger --sender ${SENDER} --broadcast
+	forge verify-contract $$(cat out.txt) src/TRACERSRegistry.sol:TRACERSRegistry --verifier blockscout --verifier-url https://explorer-sepolia.shape.network/api --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh
+
 deploy_arbitrum_one: build
 	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url arbitrum --ledger --sender ${SENDER} --broadcast
 	forge verify-contract $$(cat out.txt) src/TRACERSRegistry.sol:TRACERSRegistry --chain arbitrum --watch --constructor-args ${CONSTRUCTOR_ARGS}
