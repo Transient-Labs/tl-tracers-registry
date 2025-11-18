@@ -40,6 +40,11 @@ coverage_test:
 	forge coverage
 
 # Deployments
+deploy_sepolia: build
+	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url sepolia --ledger --sender ${SENDER} --broadcast
+	forge verify-contract $$(cat out.txt) src/TRACERSRegistry.sol:TRACERSRegistry --chain sepolia --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh
+
 deploy_arbitrum_sepolia: build
 	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url arbitrum_sepolia --ledger --sender ${SENDER} --broadcast
 	forge verify-contract $$(cat out.txt) src/TRACERSRegistry.sol:TRACERSRegistry --verifier-url https://api-sepolia.arbiscan.io/api --etherscan-api-key ${ARBISCAN_KEY} --watch --constructor-args ${CONSTRUCTOR_ARGS}
@@ -55,6 +60,11 @@ deploy_shape_sepolia: build
 	forge verify-contract $$(cat out.txt) src/TRACERSRegistry.sol:TRACERSRegistry --verifier blockscout --verifier-url https://explorer-sepolia.shape.network/api --watch --constructor-args ${CONSTRUCTOR_ARGS}
 	@bash print_and_clean.sh
 
+deploy_mainnet: build
+	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url mainnet --ledger --sender ${SENDER} --broadcast
+	forge verify-contract $$(cat out.txt) src/TRACERSRegistry.sol:TRACERSRegistry --chain mainnet --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh
+
 deploy_arbitrum_one: build
 	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url arbitrum --ledger --sender ${SENDER} --broadcast
 	forge verify-contract $$(cat out.txt) src/TRACERSRegistry.sol:TRACERSRegistry --chain arbitrum --watch --constructor-args ${CONSTRUCTOR_ARGS}
@@ -63,4 +73,9 @@ deploy_arbitrum_one: build
 deploy_base: build
 	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url base --ledger --sender ${SENDER} --broadcast
 	forge verify-contract $$(cat out.txt) src/TRACERSRegistry.sol:TRACERSRegistry --chain base --watch --constructor-args ${CONSTRUCTOR_ARGS}
+	@bash print_and_clean.sh
+
+deploy_shape: build
+	forge script script/Deploy.s.sol:Deploy --evm-version paris --rpc-url shape --ledger --sender ${SENDER} --broadcast
+	forge verify-contract $$(cat out.txt) src/TRACERSRegistry.sol:TRACERSRegistry --verifier blockscout --verifier-url https://internal-shaper-explorer.alchemypreview.com/api --watch --constructor-args ${CONSTRUCTOR_ARGS}
 	@bash print_and_clean.sh
